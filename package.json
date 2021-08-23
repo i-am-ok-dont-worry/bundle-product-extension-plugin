@@ -1,9 +1,9 @@
 {
-  "name": "vsf-api-plugin-template",
-  "pluginname": "VSF api plugin",
-  "companyname": "",
+  "name": "@grupakmk/bundle-product-extension-plugin",
+  "pluginname": "bundle-product-extension-plugin",
+  "companyname": "grupakmk",
   "version": "1.0.0",
-  "description": "Template for VSF api plugin",
+  "description": "Extends default product with bundle information",
   "main": "src/index.js",
   "scripts": {
     "test": "test",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/i-am-ok-dont-worry/vsf-api-plugin-template.git"
+    "url": "git+https://gitlab.grupakmk.pl/internal/frontend/api/addons/vsf-api-addons/bundle-product-extension-plugin.git"
   },
   "keywords": [
     "VSF",
@@ -22,9 +22,9 @@
   },
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/i-am-ok-dont-worry/vsf-api-plugin-template/issues"
+    "url": "https://gitlab.grupakmk.pl/internal/frontend/api/addons/vsf-api-addons/bundle-product-extension-plugin"
   },
-  "homepage": "https://github.com/i-am-ok-dont-worry/vsf-api-plugin-template#readme",
+  "homepage": "https://gitlab.grupakmk.pl/internal/frontend/api/addons/vsf-api-addons/bundle-product-extension-plugin#readme",
   "devDependencies": {
     "eslint": "^7.14.0",
     "eslint-config-standard": "^11.0.0",
