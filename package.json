@@ -2,7 +2,7 @@
   "name": "@grupakmk/bundle-product-extension-plugin",
   "pluginname": "bundle-product-extension-plugin",
   "companyname": "grupakmk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Extends default product with bundle information",
   "main": "src/index.js",
   "scripts": {
