@@ -10,9 +10,9 @@
  * @returns {{router: *, route: string, pluginName: string, domainName: string}}
  */
 module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiClient, ...props }) => {
-    const findBundle = (id) => {
+    const findProduct = (identifier, mapBy = 'id') => {
         return new Promise(async (resolve) => {
-            const query = { match: { id } };
+            const query = { match: { [mapBy]: identifier } };
             const payload = {
                 index: `${config.elasticsearch.index}_product`,
                 body: { query }
@@ -21,12 +21,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
 
             esClient.search(payload, (err, elasticResult) => {
                 if (err) {
-                    if (props.logger) {
-                        props.logger.debug('Cannot find bundle info: ', id, err);
-                    } else {
-                        console.debug('Cannot find bundle info: ', id, err);
-                    }
-
+                    props.logger.debug('Cannot find bundle info: ', id, err);
                     resolve(null);
                 } else {
                     const { body } = elasticResult;
@@ -41,10 +36,26 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
 
     const BundleTransformer = async (products, storeCode) => {
         for (let product of products) {
+            // Create link between simple ---> bundle
             if (product.bundle_id) {
-                const bundle = await findBundle(product.bundle_id);
+                const bundle = await findProduct(product.bundle_id);
                 if (bundle) {
-                    Object.assign(product, { bundle });
+                    Object.assign(product, {bundle});
+                }
+            } else {
+                // Create reversed link between bundle ---> simple
+                if (product.product_option && product.product_option.extension_attributes && product.product_option.extension_attributes.bundle_options) {
+                    try {
+                        const [option] = product.product_option.extension_attributes.bundle_options;
+                        const [selection] = option.option_selections;
+                        const simpleProductOption = product.extension_attributes.bundle_product_options.find(opt => String(opt.option_id) === String(option.option_id));
+                        const simpleProductLink = simpleProductOption.product_links.find(link => String(link.id) === String(selection));
+                        const simple = await findProduct(simpleProductLink.sku, 'sku');
+
+                        if (simple) {
+                            Object.assign(product, { simple });
+                        }
+                    } catch (e) {}
                 }
             }
         }
@@ -53,11 +64,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
     };
 
     // Register custom product transformer to assign bundle product
-    if (props.hasOwnProperty('entityTransformer')) {
-        props.entityTransformer.registerProductTransformer(BundleTransformer);
-    } else {
-        console.debug('Cannot register BundleTransformer. No API support for custom transformers');
-    }
+    props.entityTransformer.registerProductTransformer(BundleTransformer);
 
     return {
         domainName: '@grupakmk',
