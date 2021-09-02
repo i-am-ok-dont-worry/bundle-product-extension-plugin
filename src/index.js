@@ -12,9 +12,10 @@
 module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiClient, ...props }) => {
     const findProduct = (identifier, mapBy = 'id') => {
         return new Promise(async (resolve) => {
+            const defaultStoreCode = config.storeViews.default_store_code;
             const query = { match: { [mapBy]: identifier } };
             const payload = {
-                index: `${config.elasticsearch.index}_product`,
+                index: storeCode === defaultStoreCode ? `${config.elasticsearch.index}_product` : `${config.elasticsearch.index}_${storeCode}_product`,
                 body: { query }
             };
             const esClient = await db.getElasticClient();
@@ -38,7 +39,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
         for (let product of products) {
             // Create link between simple ---> bundle
             if (product.bundle_id) {
-                const bundle = await findProduct(product.bundle_id);
+                const bundle = await findProduct(product.bundle_id, null, storeCode);
                 if (bundle) {
                     Object.assign(product, {bundle});
                 }
@@ -50,7 +51,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
                         const [selection] = option.option_selections;
                         const simpleProductOption = product.extension_attributes.bundle_product_options.find(opt => String(opt.option_id) === String(option.option_id));
                         const simpleProductLink = simpleProductOption.product_links.find(link => String(link.id) === String(selection));
-                        const simple = await findProduct(simpleProductLink.sku, 'sku');
+                        const simple = await findProduct(simpleProductLink.sku, 'sku', storeCode);
 
                         if (simple) {
                             Object.assign(product, { simple });
