@@ -41,7 +41,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
         for (let product of products) {
             // Create link between simple ---> bundle
             if (product.bundle_id) {
-                const bundle = await findProduct(product.bundle_id, null, storeCode);
+                const bundle = await findProduct(product.bundle_id, 'id', storeCode);
                 if (bundle) {
                     Object.assign(product, {bundle});
                 }
