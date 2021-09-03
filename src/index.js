@@ -10,7 +10,7 @@
  * @returns {{router: *, route: string, pluginName: string, domainName: string}}
  */
 module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiClient, ...props }) => {
-    const findProduct = (identifier, mapBy = 'id') => {
+    const findProduct = (identifier, mapBy = 'id', storeCode) => {
         return new Promise(async (resolve) => {
             const defaultStoreCode = config.storeViews.default_store_code;
             const query = { match: { [mapBy]: identifier } };
