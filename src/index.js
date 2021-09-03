@@ -22,7 +22,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
 
             esClient.search(payload, (err, elasticResult) => {
                 if (err) {
-                    props.logger.debug('Cannot find bundle info: ', id, err);
+                    props.logger.debug('Cannot find bundle info: ', `${mapBy}: ${identifier}`, err);
                     resolve(null);
                 } else {
                     const { body } = elasticResult;
