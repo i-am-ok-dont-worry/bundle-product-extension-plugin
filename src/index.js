@@ -15,7 +15,7 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
             const defaultStoreCode = config.storeViews.default_store_code;
             const query = { match: { [mapBy]: identifier } };
             const payload = {
-                index: storeCode === defaultStoreCode ? `${config.elasticsearch.index}_product` : `${config.elasticsearch.index}_${storeCode}_product`,
+                index: !storeCode || storeCode === defaultStoreCode ? `${config.elasticsearch.index}_product` : `${config.elasticsearch.index}_${storeCode}_product`,
                 body: { query }
             };
             const esClient = await db.getElasticClient();
@@ -36,6 +36,8 @@ module.exports = ({ config, db, router, cache, apiStatus, apiError, getRestApiCl
     };
 
     const BundleTransformer = async (products, storeCode) => {
+        if (products.length > 1) return products;
+
         for (let product of products) {
             // Create link between simple ---> bundle
             if (product.bundle_id) {
